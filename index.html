@@ -50,12 +50,6 @@
         <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
         <script type="text/javascript">
             $(function() {
-                var compare = function (a, b) {
-                    if (a && a.url && a.url.toLowerCase().trim() > b.url.toLowerCase().trim()) { return 1 }
-                    if (a && a.url && a.url.toLowerCase().trim() < b.url.toLowerCase().trim()) { return -1 }
-                    return 0
-                }
-
                 firebase.initializeApp({
                     apiKey: 'AIzaSyDKa_9Dca5kKOP-5Dczx1zbvvNymzeb8AA',
                     authDomain: 'osta-ee.firebaseapp.com',
@@ -71,7 +65,11 @@
 
                     $('title').text(values.length)
 
-                    values.sort(compare)
+                    values.sort(function (a, b) {
+                        if (a && a.url && a.url.toLowerCase().trim() > b.url.toLowerCase().trim()) { return 1 }
+                        if (a && a.url && a.url.toLowerCase().trim() < b.url.toLowerCase().trim()) { return -1 }
+                        return 0
+                    })
 
                     for (var i = 0; i < values.length; i++) {
                         if (limit < 0) { break }
