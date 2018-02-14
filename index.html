@@ -124,7 +124,7 @@
 
                                         firebase.database().ref('objects/' + id).set({
                                             id: id,
-                                            created: new Date(),
+                                            updated: new Date(),
                                             title: title,
                                             url: itemUrl,
                                             picture: picture,
@@ -180,7 +180,7 @@
                                 values[i].url.toLowerCase().includes('/tempel-') ||
                                 values[i].url.toLowerCase().includes('/umbrik-') ||
                                 values[i].url.toLowerCase().includes('/vimpel-') ||
-                                values[i].hidden === true
+                                values[i].deleted
                             ) { continue }
 
                             limit--
@@ -197,7 +197,7 @@
                 $('body').on('click', '.object', function (e) {
                     if(e.altKey) {
                         $(this).parent().hide()
-                        firebase.database().ref('objects/' + $(this).data('id')).update({ hidden: true })
+                        firebase.database().ref('objects/' + $(this).data('id')).update({ deleted: new Date() })
                         e.preventDefault()
                     }
                 })
