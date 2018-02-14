@@ -122,7 +122,7 @@
                                         var expires = item.find('li.offer-expires').text() || null
                                         var offers = parseInt(item.find('li.offers-made').text()) || 0
 
-                                        firebase.database().ref('objects/' + id).set({
+                                        firebase.database().ref('objects/' + id).update({
                                             id: id,
                                             updated: new Date(),
                                             title: title,
