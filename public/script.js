@@ -65,12 +65,13 @@ $(function() {
                 skipedAuctions++
             } else if (limit > 0) {
                 limit--
+
                 var priceDisplay = (values[i].priceBuy || values[i].price || 0).toLocaleString('et', { style: 'currency', currency: 'EUR', currencyDisplay: 'symbol' })
 
                 $('#auctions').append('<div class="auction" data-id="' + values[i].id + '"><a href="' + values[i].url + '" target="_blank" style="background-image: url(' + values[i].picture + ')"></a><strong class="' + (values[i].priceBuy ? 'buy' : '') + '">' + priceDisplay + '</strong>' + values[i].title + '<div>')
             }
 
-            $('h1').html('Total: ' + totalAuctions + '; Skiped: ' + skipedAuctions + '; Deleted: ' + deletedAuctions)
+            $('h1').html('Total: ' + totalAuctions + '; Skiped: ' + skipedAuctions + '; Deleted: ' + deletedAuctions + '; ToDo: ' + (totalAuctions - (skipedAuctions + deletedAuctions)))
         }
     })
 
@@ -175,5 +176,12 @@ $(function() {
         $(this).parent().hide()
         firebase.database().ref('auctions/' + $(this).parent().data('id')).update({ deleted: (new Date()).toISOString() })
         e.preventDefault()
+    })
+
+    $('#deleteAllAuctions').click(function (e) {
+        $('.auction').each(function () {
+            $(this).hide()
+            firebase.database().ref('auctions/' + $(this).data('id')).update({ deleted: (new Date()).toISOString() })
+        })
     })
 })
