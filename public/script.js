@@ -9,20 +9,24 @@ $(function() {
     })
 
     firebase.database().ref('auctions/').once('value').then(function (snapshot) {
-        var limit = 999
+        var limit = 200
         var values = Object.values(snapshot.val())
-
-        $('title').text(values.length)
+        var totalAuctions = values.length
+        var skipedAuctions = 0
+        var deletedAuctions = 0
 
         values.sort(function (a, b) {
+            // if (a && a.id && a.id < b.id) { return 1 }
+            // if (a && a.id && a.id > b.id) { return -1 }
             if (a && a.url && a.url.toLowerCase().trim() > b.url.toLowerCase().trim()) { return 1 }
             if (a && a.url && a.url.toLowerCase().trim() < b.url.toLowerCase().trim()) { return -1 }
             return 0
         })
 
         for (var i = 0; i < values.length; i++) {
-            if (limit < 0) { break }
-            if (
+            if (values[i].deleted) {
+                deletedAuctions++
+            } else if (
                 values[i].url.toLowerCase().includes('-armeekaart-') ||
                 values[i].url.toLowerCase().includes('-entsuklopeedia-') ||
                 values[i].url.toLowerCase().includes('-eritempel-') ||
@@ -35,6 +39,8 @@ $(function() {
                 values[i].url.toLowerCase().includes('-kopikat-') ||
                 values[i].url.toLowerCase().includes('-kunstsiid-') ||
                 values[i].url.toLowerCase().includes('-pagunid-') ||
+                values[i].url.toLowerCase().includes('little-pony') ||
+                values[i].url.toLowerCase().includes('-templiga-') ||
                 values[i].url.toLowerCase().includes('-postkaart-') ||
                 values[i].url.toLowerCase().includes('-margialbum-') ||
                 values[i].url.toLowerCase().includes('-margid-') ||
@@ -45,20 +51,26 @@ $(function() {
                 values[i].url.toLowerCase().includes('-taskukalender-') ||
                 values[i].url.toLowerCase().includes('-rubla-') ||
                 values[i].url.toLowerCase().includes('-umbrik-') ||
+                values[i].url.toLowerCase().includes('-etikett-') ||
+                values[i].url.toLowerCase().includes('-silt-') ||
+                values[i].url.toLowerCase().includes('-tass-') ||
+                values[i].url.toLowerCase().includes('jane-norman') ||
                 values[i].url.toLowerCase().includes('-umbrikud-') ||
                 values[i].url.toLowerCase().includes('-vimpel-') ||
                 values[i].url.toLowerCase().includes('/mark-') ||
                 values[i].url.toLowerCase().includes('/tempel-') ||
                 values[i].url.toLowerCase().includes('/umbrik-') ||
-                values[i].url.toLowerCase().includes('/vimpel-') ||
-                values[i].deleted
-            ) { continue }
+                values[i].url.toLowerCase().includes('/vimpel-')
+            ) {
+                skipedAuctions++
+            } else if (limit > 0) {
+                limit--
+                var priceDisplay = (values[i].priceBuy || values[i].price || 0).toLocaleString('et', { style: 'currency', currency: 'EUR', currencyDisplay: 'symbol' })
 
-            limit--
+                $('#auctions').append('<div class="auction" data-id="' + values[i].id + '"><a href="' + values[i].url + '" target="_blank" style="background-image: url(' + values[i].picture + ')"></a><strong class="' + (values[i].priceBuy ? 'buy' : '') + '">' + priceDisplay + '</strong>' + values[i].title + '<div>')
+            }
 
-            var priceDisplay = (values[i].priceBuy || values[i].price || 0).toLocaleString('et', { style: 'currency', currency: 'EUR', currencyDisplay: 'symbol' })
-
-            $('#auctions').append('<div class="auction" data-id="' + values[i].id + '"><a href="' + values[i].url + '" target="_blank" style="background-image: url(' + values[i].picture + ')"></a><strong class="' + (values[i].priceBuy ? 'buy' : '') + '">' + priceDisplay + '</strong>' + values[i].title + '<div>')
+            $('h1').html('Total: ' + totalAuctions + '; Skiped: ' + skipedAuctions + '; Deleted: ' + deletedAuctions)
         }
     })
 
@@ -88,6 +100,7 @@ $(function() {
             {cat: 1000, q: 'cccr' },
             {cat: 1000, q: 'electronika' },
             {cat: 1000, q: 'elektronika' },
+            {cat: 1000, q: 'gdr' },
             {cat: 1000, q: 'juku' },
             {cat: 1000, q: 'kalkulaator' },
             {cat: 1000, q: 'norma' },
@@ -148,8 +161,8 @@ $(function() {
                             })
 
                             auctionTotalCount++
-                            $('h1').html('Updated: ' + auctionTotalCount)
                         }
+                        $('h1').html('Updated: ' + auctionTotalCount)
                     }
                 })
             }
