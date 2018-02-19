@@ -2,7 +2,8 @@ body {
     font-size: 12px;
     font-family: 'Helvetica Neue', Helvetica Arial;
 }
-header {
+header, footer {
+    display: block;
     height: 50px;
     padding: 10px;
 }
@@ -11,7 +12,7 @@ h1 {
     margin: 0;
     padding: 0;
 }
-#updateAuctions {
+button {
     float: right;
 }
 .auction {

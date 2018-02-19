@@ -9,7 +9,7 @@ $(function() {
     })
 
     firebase.database().ref('auctions/').once('value').then(function (snapshot) {
-        var limit = 200
+        var limit = 400
         var values = Object.values(snapshot.val())
         var totalAuctions = values.length
         var skipedAuctions = 0
@@ -65,12 +65,13 @@ $(function() {
                 skipedAuctions++
             } else if (limit > 0) {
                 limit--
+
                 var priceDisplay = (values[i].priceBuy || values[i].price || 0).toLocaleString('et', { style: 'currency', currency: 'EUR', currencyDisplay: 'symbol' })
 
                 $('#auctions').append('<div class="auction" data-id="' + values[i].id + '"><a href="' + values[i].url + '" target="_blank" style="background-image: url(' + values[i].picture + ')"></a><strong class="' + (values[i].priceBuy ? 'buy' : '') + '">' + priceDisplay + '</strong>' + values[i].title + '<div>')
             }
 
-            $('h1').html('Total: ' + totalAuctions + '; Skiped: ' + skipedAuctions + '; Deleted: ' + deletedAuctions)
+            $('h1').html('Total: ' + totalAuctions + '; Skiped: ' + skipedAuctions + '; Deleted: ' + deletedAuctions + '; ToDo: ' + (totalAuctions - (skipedAuctions + deletedAuctions)))
         }
     })
 
@@ -98,22 +99,28 @@ $(function() {
         var searches = [
             {cat: 1000, q: 'cccp' },
             {cat: 1000, q: 'cccr' },
+            {cat: 1000, q: 'diaposi' },
             {cat: 1000, q: 'electronika' },
             {cat: 1000, q: 'elektronika' },
             {cat: 1000, q: 'gdr' },
             {cat: 1000, q: 'juku' },
             {cat: 1000, q: 'kalkulaator' },
+            {cat: 1000, q: 'konstruktor' },
+            {cat: 1000, q: 'majak' },
             {cat: 1000, q: 'norma' },
             {cat: 1000, q: 'nõuk' },
             {cat: 1000, q: 'nsv' },
+            {cat: 1000, q: 'radiotehnika' },
             {cat: 1000, q: 'salvo' },
+            {cat: 1000, q: 'slaid' },
             {cat: 1000, q: 'ussr' },
             {cat: 1000, q: 'vahvli' },
             {cat: 1000, q: 'venea' },
             {cat: 1000, q: 'zx' },
+            {cat: 1000, q: 'маяк' },
             {cat: 1000, q: 'ссср' },
-            {cat: 1199, q: '' }, // Mudelautod
-            {cat: 2141, q: '' }, // Nõukogudeaegsed kaubad
+            {cat: 1199, q: '' }, // mudelautod
+            {cat: 2141, q: '' }, // nõukogudeaegsed kaubad
         ]
         var auctions = {}
         var auctionTotalCount = {}
@@ -175,5 +182,12 @@ $(function() {
         $(this).parent().hide()
         firebase.database().ref('auctions/' + $(this).parent().data('id')).update({ deleted: (new Date()).toISOString() })
         e.preventDefault()
+    })
+
+    $('#deleteAllAuctions').click(function (e) {
+        $('.auction').each(function () {
+            $(this).hide()
+            firebase.database().ref('auctions/' + $(this).data('id')).update({ deleted: (new Date()).toISOString() })
+        })
     })
 })
