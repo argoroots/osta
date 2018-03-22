@@ -1,4 +1,6 @@
 $(function() {
+    const today = (new Date()).toISOString().substr(0, 10)
+
     firebase.initializeApp({
         apiKey: 'AIzaSyDKa_9Dca5kKOP-5Dczx1zbvvNymzeb8AA',
         authDomain: 'osta-ee.firebaseapp.com',
@@ -8,8 +10,8 @@ $(function() {
         messagingSenderId: '367995677054'
     })
 
-    firebase.database().ref('auctions/').once('value').then(function (snapshot) {
-        var limit = 400
+    firebase.database().ref('auctions/').orderByChild('updated').startAt(today).once('value').then(function (snapshot) {
+        var limit = 250
         var values = Object.values(snapshot.val())
         var totalAuctions = values.length
         var skipedAuctions = 0
@@ -40,6 +42,7 @@ $(function() {
                 values[i].url.toLowerCase().includes('-kunstsiid-') ||
                 values[i].url.toLowerCase().includes('-pagunid-') ||
                 values[i].url.toLowerCase().includes('little-pony') ||
+                values[i].url.toLowerCase().includes('littlest-pet-shop') ||
                 values[i].url.toLowerCase().includes('-templiga-') ||
                 values[i].url.toLowerCase().includes('-postkaart-') ||
                 values[i].url.toLowerCase().includes('-margialbum-') ||
@@ -87,14 +90,11 @@ $(function() {
             'preset=',
             'orderby=',
             'gallery=',
-            // 'q[cat]=1000',
-            // 'q[q]=n%c3%b5uk',
             'q[show_items]=1',
             'q[type]=all',
             'q[fuseaction]=search.search',
             'q[searchform]=search.advanced',
-            'pagesize=180',
-            // 'start=0'
+            'pagesize=180'
         ]
         var searches = [
             {cat: 1000, q: 'cccp' },
@@ -103,24 +103,38 @@ $(function() {
             {cat: 1000, q: 'electronika' },
             {cat: 1000, q: 'elektronika' },
             {cat: 1000, q: 'gdr' },
+            {cat: 1000, q: 'jawa' },
             {cat: 1000, q: 'juku' },
             {cat: 1000, q: 'kalkulaator' },
             {cat: 1000, q: 'konstruktor' },
+            {cat: 1000, q: 'lükati' },
             {cat: 1000, q: 'majak' },
+            {cat: 1000, q: 'muravei' },
             {cat: 1000, q: 'norma' },
+
             {cat: 1000, q: 'nõuk' },
             {cat: 1000, q: 'nsv' },
+
             {cat: 1000, q: 'radiotehnika' },
             {cat: 1000, q: 'salvo' },
             {cat: 1000, q: 'slaid' },
+            {cat: 1000, q: 'stopper' },
+            {cat: 1000, q: 'taskuarvut' },
             {cat: 1000, q: 'ussr' },
             {cat: 1000, q: 'vahvli' },
             {cat: 1000, q: 'venea' },
+            {cat: 1000, q: 'zenit' },
             {cat: 1000, q: 'zx' },
             {cat: 1000, q: 'маяк' },
             {cat: 1000, q: 'ссср' },
-            {cat: 1199, q: '' }, // mudelautod
-            {cat: 2141, q: '' }, // nõukogudeaegsed kaubad
+            {cat: 1000, seller: 'FFMSRPDO' },
+            {cat: 1000, seller: 'hdrsport' },
+            {cat: 1000, seller: 'kuivik' },
+            {cat: 1000, seller: 'lugu' },
+            {cat: 1000, seller: 'maasees' }, // nostalgiapood
+            {cat: 1199 }, // mudelautod
+
+            {cat: 2141 }, // nõukogudeaegsed kaubad
         ]
         var auctions = {}
         var auctionTotalCount = {}
@@ -130,10 +144,12 @@ $(function() {
             var itemsCount = 1
 
             while (itemsCount !== 0) {
+                var fullUrl = url + query.join('&') + '&q[cat]=' + (searches[s].cat || '') + '&q[q]=' + (searches[s].q || '') + '&q[seller]=' + (searches[s].seller || '') + '&start=' + start
+
                 $.ajax({
                     type: 'GET',
                     type: 'GET',
-                    url: url + query.join('&') + '&q[cat]=' + searches[s].cat + '&q[q]=' + searches[s].q + '&start=' + start,
+                    url: fullUrl,
                     async: false,
                     success: function (data) {
                         var html = $.parseHTML(data)
@@ -142,7 +158,7 @@ $(function() {
                         itemsCount = items.length
                         start = start + itemsCount
 
-                        console.log(searches[s].cat, searches[s].q, start)
+                        console.log('c:' + searches[s].cat + ' s:' + searches[s].seller + ' q:' + searches[s].q + ' - ' + start)
 
                         for (var i = 0; i < items.length; i++) {
                             var item = $(items[i])
