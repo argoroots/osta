@@ -9,9 +9,10 @@ $(function() {
         storageBucket: '',
         messagingSenderId: '367995677054'
     })
+    // firebase.database().ref('auctions/').remove()
 
     firebase.database().ref('auctions/').orderByChild('updated').startAt(today).once('value').then(function (snapshot) {
-        var limit = 250
+        var limit = 360
         var values = Object.values(snapshot.val())
         var totalAuctions = values.length
         var skipedAuctions = 0
@@ -32,6 +33,7 @@ $(function() {
                 values[i].url.toLowerCase().includes('-armeekaart-') ||
                 values[i].url.toLowerCase().includes('-entsuklopeedia-') ||
                 values[i].url.toLowerCase().includes('-eritempel-') ||
+                values[i].url.toLowerCase().includes('-etikett-') ||
                 values[i].url.toLowerCase().includes('-kangas-') ||
                 values[i].url.toLowerCase().includes('-kop-') ||
                 values[i].url.toLowerCase().includes('-kopeek-') ||
@@ -40,30 +42,31 @@ $(function() {
                 values[i].url.toLowerCase().includes('-kopikas-') ||
                 values[i].url.toLowerCase().includes('-kopikat-') ||
                 values[i].url.toLowerCase().includes('-kunstsiid-') ||
-                values[i].url.toLowerCase().includes('-pagunid-') ||
-                values[i].url.toLowerCase().includes('little-pony') ||
-                values[i].url.toLowerCase().includes('littlest-pet-shop') ||
-                values[i].url.toLowerCase().includes('-templiga-') ||
-                values[i].url.toLowerCase().includes('-postkaart-') ||
+                values[i].url.toLowerCase().includes('-loteriipilet-') ||
                 values[i].url.toLowerCase().includes('-margialbum-') ||
                 values[i].url.toLowerCase().includes('-margid-') ||
                 values[i].url.toLowerCase().includes('-mark-') ||
                 values[i].url.toLowerCase().includes('-marki-') ||
                 values[i].url.toLowerCase().includes('-munt-') ||
+                values[i].url.toLowerCase().includes('-ollesilt-') ||
+                values[i].url.toLowerCase().includes('-pagunid-') ||
+                values[i].url.toLowerCase().includes('-postkaart-') ||
                 values[i].url.toLowerCase().includes('-rubl-') ||
-                values[i].url.toLowerCase().includes('-taskukalender-') ||
                 values[i].url.toLowerCase().includes('-rubla-') ||
-                values[i].url.toLowerCase().includes('-umbrik-') ||
-                values[i].url.toLowerCase().includes('-etikett-') ||
                 values[i].url.toLowerCase().includes('-silt-') ||
+                values[i].url.toLowerCase().includes('-taskukalender-') ||
                 values[i].url.toLowerCase().includes('-tass-') ||
-                values[i].url.toLowerCase().includes('jane-norman') ||
+                values[i].url.toLowerCase().includes('-templiga-') ||
+                values[i].url.toLowerCase().includes('-umbrik-') ||
                 values[i].url.toLowerCase().includes('-umbrikud-') ||
                 values[i].url.toLowerCase().includes('-vimpel-') ||
                 values[i].url.toLowerCase().includes('/mark-') ||
                 values[i].url.toLowerCase().includes('/tempel-') ||
                 values[i].url.toLowerCase().includes('/umbrik-') ||
-                values[i].url.toLowerCase().includes('/vimpel-')
+                values[i].url.toLowerCase().includes('/vimpel-') ||
+                values[i].url.toLowerCase().includes('jane-norman') ||
+                values[i].url.toLowerCase().includes('little-pony') ||
+                values[i].url.toLowerCase().includes('littlest-pet-shop')
             ) {
                 skipedAuctions++
             } else if (limit > 0) {
@@ -78,8 +81,7 @@ $(function() {
         }
     })
 
-    $('#updateAuctions').click(function () {
-        // firebase.database().ref('auctions/').remove()
+    var updateAuctions = function (set) {
 
         var url = 'https://osta-ee.postimees.ee/index.php?'
         var query = [
@@ -88,7 +90,7 @@ $(function() {
             'limit=running',
             'time=left',
             'preset=',
-            'orderby=',
+            'orderby=enda',
             'gallery=',
             'q[show_items]=1',
             'q[type]=all',
@@ -97,45 +99,50 @@ $(function() {
             'pagesize=180'
         ]
         var searches = [
-            {cat: 1000, q: 'cccp' },
-            {cat: 1000, q: 'cccr' },
-            {cat: 1000, q: 'diaposi' },
-            {cat: 1000, q: 'electronika' },
-            {cat: 1000, q: 'elektronika' },
-            {cat: 1000, q: 'gdr' },
-            {cat: 1000, q: 'jawa' },
-            {cat: 1000, q: 'juku' },
-            {cat: 1000, q: 'kalkulaator' },
-            {cat: 1000, q: 'konstruktor' },
-            {cat: 1000, q: 'lükati' },
-            {cat: 1000, q: 'majak' },
-            {cat: 1000, q: 'muravei' },
-            {cat: 1000, q: 'norma' },
-
-            {cat: 1000, q: 'nõuk' },
-            {cat: 1000, q: 'nsv' },
-
-            {cat: 1000, q: 'radiotehnika' },
-            {cat: 1000, q: 'salvo' },
-            {cat: 1000, q: 'slaid' },
-            {cat: 1000, q: 'stopper' },
-            {cat: 1000, q: 'taskuarvut' },
-            {cat: 1000, q: 'ussr' },
-            {cat: 1000, q: 'vahvli' },
-            {cat: 1000, q: 'venea' },
-            {cat: 1000, q: 'zenit' },
-            {cat: 1000, q: 'zx' },
-            {cat: 1000, q: 'маяк' },
-            {cat: 1000, q: 'ссср' },
-            {cat: 1000, seller: 'FFMSRPDO' },
-            {cat: 1000, seller: 'hdrsport' },
-            {cat: 1000, seller: 'kuivik' },
-            {cat: 1000, seller: 'lugu' },
-            {cat: 1000, seller: 'maasees' }, // nostalgiapood
-            {cat: 1199 }, // mudelautod
-
-            {cat: 2141 }, // nõukogudeaegsed kaubad
-        ]
+            [
+                {cat: 1000, q: 'nõuk' }
+            ],
+            [
+                {cat: 1000, q: 'nsv' }
+            ],
+            [
+                {cat: 1000, q: 'cccp' },
+                {cat: 1000, q: 'cccr' },
+                {cat: 1000, q: 'diaposi' },
+                {cat: 1000, q: 'electronika' },
+                {cat: 1000, q: 'elektronika' },
+                {cat: 1000, q: 'gdr' },
+                {cat: 1000, q: 'jawa' },
+                {cat: 1000, q: 'juku' },
+                {cat: 1000, q: 'kalkulaator' },
+                {cat: 1000, q: 'konstruktor' },
+                {cat: 1000, q: 'lükati' },
+                {cat: 1000, q: 'majak' },
+                {cat: 1000, q: 'muravei' },
+                {cat: 1000, q: 'norma' },
+                {cat: 1000, q: 'radiotehnika' },
+                {cat: 1000, q: 'salvo' },
+                {cat: 1000, q: 'slaid' },
+                {cat: 1000, q: 'stopper' },
+                {cat: 1000, q: 'taskuarvut' },
+                {cat: 1000, q: 'ussr' },
+                {cat: 1000, q: 'vahvli' },
+                {cat: 1000, q: 'venea' },
+                {cat: 1000, q: 'zenit' },
+                {cat: 1000, q: 'zx' },
+                {cat: 1000, q: 'маяк' },
+                {cat: 1000, q: 'ссср' },
+                {cat: 1000, seller: 'FFMSRPDO' },
+                {cat: 1000, seller: 'hdrsport' },
+                {cat: 1000, seller: 'kuivik' },
+                {cat: 1000, seller: 'lugu' },
+                {cat: 1000, seller: 'maasees' }, // nostalgiapood
+                {cat: 1199 }, // mudelautod
+            ],
+            [
+                {cat: 2141 }, // nõukogudeaegsed kaubad
+            ]
+        ][set]
         var auctions = {}
         var auctionTotalCount = {}
 
@@ -190,7 +197,7 @@ $(function() {
                 })
             }
         }
-    })
+    }
 
     $('body').on('click', '.auction a', function (e) {
         if(!e.altKey) { return }
@@ -198,6 +205,10 @@ $(function() {
         $(this).parent().hide()
         firebase.database().ref('auctions/' + $(this).parent().data('id')).update({ deleted: (new Date()).toISOString() })
         e.preventDefault()
+    })
+
+    $('.updateAuctions').click(function () {
+        updateAuctions($(this).data('set'))
     })
 
     $('#deleteAllAuctions').click(function (e) {
