@@ -120,6 +120,7 @@ $(function() {
                 {cat: 1000, q: 'majak' },
                 {cat: 1000, q: 'muravei' },
                 {cat: 1000, q: 'norma' },
+                {cat: 1000, q: 'piko' },
                 {cat: 1000, q: 'radiotehnika' },
                 {cat: 1000, q: 'salvo' },
                 {cat: 1000, q: 'slaid' },
@@ -154,7 +155,6 @@ $(function() {
                 var fullUrl = url + query.join('&') + '&q[cat]=' + (searches[s].cat || '') + '&q[q]=' + (searches[s].q || '') + '&q[seller]=' + (searches[s].seller || '') + '&start=' + start
 
                 $.ajax({
-                    type: 'GET',
                     type: 'GET',
                     url: fullUrl,
                     async: false,
