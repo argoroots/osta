@@ -129,6 +129,7 @@ $(function() {
                 {cat: 1000, q: 'ussr' },
                 {cat: 1000, q: 'vahvli' },
                 {cat: 1000, q: 'venea' },
+                {cat: 1000, q: 'vinüül' },
                 {cat: 1000, q: 'zenit' },
                 {cat: 1000, q: 'zx' },
                 {cat: 1000, q: 'маяк' },
