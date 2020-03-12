@@ -12,7 +12,7 @@ $(function() {
     // firebase.database().ref('auctions/').remove()
 
     firebase.database().ref('auctions/').orderByChild('updated').startAt(today).once('value').then(function (snapshot) {
-        var limit = 360
+        var limit = 120
         var values = Object.values(snapshot.val())
         var totalAuctions = values.length
         var skipedAuctions = 0
@@ -35,6 +35,7 @@ $(function() {
                 values[i].url.toLowerCase().includes('-eritempel-') ||
                 values[i].url.toLowerCase().includes('-etikett-') ||
                 values[i].url.toLowerCase().includes('-kangas-') ||
+                values[i].url.toLowerCase().includes('-kommipaber-') ||
                 values[i].url.toLowerCase().includes('-kop-') ||
                 values[i].url.toLowerCase().includes('-kopeek-') ||
                 values[i].url.toLowerCase().includes('-kopejka-') ||
@@ -54,13 +55,17 @@ $(function() {
                 values[i].url.toLowerCase().includes('-rubl-') ||
                 values[i].url.toLowerCase().includes('-rubla-') ||
                 values[i].url.toLowerCase().includes('-silt-') ||
+                values[i].url.toLowerCase().includes('-sokolaadipaber-') ||
                 values[i].url.toLowerCase().includes('-taskukalender-') ||
                 values[i].url.toLowerCase().includes('-tass-') ||
                 values[i].url.toLowerCase().includes('-templiga-') ||
                 values[i].url.toLowerCase().includes('-umbrik-') ||
                 values[i].url.toLowerCase().includes('-umbrikud-') ||
                 values[i].url.toLowerCase().includes('-vimpel-') ||
+                values[i].url.toLowerCase().includes('/ensv-19') ||
                 values[i].url.toLowerCase().includes('/mark-') ||
+                values[i].url.toLowerCase().includes('/nouka-aegne-salajane-1') ||
+                values[i].url.toLowerCase().includes('/nsvl-19') ||
                 values[i].url.toLowerCase().includes('/tempel-') ||
                 values[i].url.toLowerCase().includes('/umbrik-') ||
                 values[i].url.toLowerCase().includes('/vimpel-') ||
@@ -83,7 +88,7 @@ $(function() {
 
     var updateAuctions = function (set) {
 
-        var url = 'https://osta-ee.postimees.ee/index.php?'
+        var url = 'https://osta.ee/index.php?'
         var query = [
             'fuseaction=search.search',
             'id=1000',
@@ -100,24 +105,31 @@ $(function() {
         ]
         var searches = [
             [
-                {cat: 1000, q: 'nõuk' }
+                {cat: 1000, q: 'nõuk' },
             ],
             [
-                {cat: 1000, q: 'nsv' }
+                {cat: 1000, q: 'nsv' },
             ],
             [
+                {cat:  723, q: 'eesti pop' },
                 {cat: 1000, q: 'cccp' },
                 {cat: 1000, q: 'cccr' },
+                {cat: 1000, q: 'dagö' },
                 {cat: 1000, q: 'diaposi' },
+                {cat: 1000, q: 'eesti kullafond cd' },
                 {cat: 1000, q: 'electronika' },
                 {cat: 1000, q: 'elektronika' },
                 {cat: 1000, q: 'gdr' },
                 {cat: 1000, q: 'jawa' },
                 {cat: 1000, q: 'juku' },
+                {cat: 1000, q: 'kala dvd' },
                 {cat: 1000, q: 'kalkulaator' },
                 {cat: 1000, q: 'konstruktor' },
                 {cat: 1000, q: 'lükati' },
                 {cat: 1000, q: 'majak' },
+                {cat: 1000, q: 'melodia' },
+                {cat: 1000, q: 'melodija' },
+                {cat: 1000, q: 'meloodia' },
                 {cat: 1000, q: 'muravei' },
                 {cat: 1000, q: 'norma' },
                 {cat: 1000, q: 'piko' },
@@ -134,11 +146,14 @@ $(function() {
                 {cat: 1000, q: 'zx' },
                 {cat: 1000, q: 'маяк' },
                 {cat: 1000, q: 'ссср' },
+                {cat: 1000, seller: 'eller1' },
                 {cat: 1000, seller: 'FFMSRPDO' },
                 {cat: 1000, seller: 'hdrsport' },
                 {cat: 1000, seller: 'kuivik' },
                 {cat: 1000, seller: 'lugu' },
                 {cat: 1000, seller: 'maasees' }, // nostalgiapood
+                {cat: 1000, seller: 'TigeSiil' },
+                {cat: 1000, seller: 'wallery' },
                 {cat: 1199 }, // mudelautod
             ],
             [
@@ -170,7 +185,7 @@ $(function() {
 
                         for (var i = 0; i < items.length; i++) {
                             var item = $(items[i])
-                            var itemUrl = 'https://osta-ee.postimees.ee/' + item.find('p.offer-thumb__title a').attr('href').replace('?_src=search', '')
+                            var itemUrl = 'https://osta.ee/' + item.find('p.offer-thumb__title a').attr('href').replace('?_src=search', '')
                             var id = parseInt(itemUrl.split('-').slice(-1)[0].split('.')[0])
                             var title = item.find('p.offer-thumb__title a').text().replace(/!/g , '').replace(/  /g , '').replace(/  /g , '').trim()
                             var picture = item.find('img').data('original')
@@ -213,9 +228,18 @@ $(function() {
     })
 
     $('#deleteAllAuctions').click(function (e) {
+        var count = $('.auction').length
         $('.auction').each(function () {
-            $(this).hide()
-            firebase.database().ref('auctions/' + $(this).data('id')).update({ deleted: (new Date()).toISOString() })
+            count = count - 1
+            var item = $(this)
+            firebase.database().ref('auctions/' + item.data('id')).update({ deleted: (new Date()).toISOString() }).then(function () {
+              item.hide()
+              if (count === 0) {
+                setTimeout(function () {
+                  location.reload()
+                }, 3000)
+              }
+            })
         })
     })
 })
